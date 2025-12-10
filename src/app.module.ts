@@ -16,7 +16,7 @@ import { IamService } from './authentication/iam/iam.service';
       host: 'localhost',
       port: 5432,
       username: 'postgres',
-      password: 'pass123',
+      password: 'admin',
       database: 'postgres',
       autoLoadEntities: true,
       synchronize: true,
