@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-call */
 import { IsEmail, MinLength } from 'class-validator';
 
 export class SignInDto {

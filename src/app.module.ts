@@ -6,9 +6,11 @@ import { UsersModule } from './users/users.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { IamModule } from './iam/iam.module';
 import { IamService } from './authentication/iam/iam.service';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
+    ConfigModule.forRoot({ isGlobal: true }),
     CoffeesModule,
     UsersModule,
     TypeOrmModule.forRoot({

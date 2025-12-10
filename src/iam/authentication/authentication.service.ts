@@ -1,5 +1,6 @@
 import {
   ConflictException,
+  Inject,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,11 +10,18 @@ import { User } from '../../users/entities/user.entity';
 import { HashingService } from '../hashing/hashing.service';
 import { SignUpDto } from './dto/sign-up.dto/sign-up.dto';
 import { SignInDto } from './dto/sign-in.dto/sign-in.dto';
+import { JwtService } from '@nestjs/jwt';
+import jwtConfig from 'src/config/jwt.config';
+import { ConfigType } from '@nestjs/config';
+import { ActiveUserData } from '../interfaces/active-user-data.interface';
 
 @Injectable()
 export class AuthenticationService {
   constructor(
     @InjectRepository(User) private readonly usersRepository: Repository<User>,
+    private readonly jwtService: JwtService,
+    @Inject(jwtConfig.KEY)
+    private readonly jwtConfiguration: ConfigType<typeof jwtConfig>,
     private readonly hashingService: HashingService,
   ) {}
 
@@ -26,6 +34,7 @@ export class AuthenticationService {
       await this.usersRepository.save(user);
     } catch (err) {
       const pgUniqueViolationErrorCode = '23505';
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
       if (err.code === pgUniqueViolationErrorCode) {
         throw new ConflictException();
       }
@@ -47,7 +56,19 @@ export class AuthenticationService {
     if (!isEqual) {
       throw new UnauthorizedException('Password does not match');
     }
-    // TODO: We'll fill this gap in the next lesson
-    return true;
+    const accessToken = await this.jwtService.signAsync(
+      {
+        sub: user.id,
+        email: user.email,
+      } as ActiveUserData,
+      {
+        secret: this.jwtConfiguration.secret,
+        audience: this.jwtConfiguration.audience,
+        issuer: this.jwtConfiguration.issuer,
+        expiresIn: this.jwtConfiguration.accessTokenTtl,
+      },
+    );
+
+    return { accessToken };
   }
 }
