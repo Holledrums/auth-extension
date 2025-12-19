@@ -1,9 +1,20 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { DataSource } from 'typeorm';
 
 @Injectable()
 export class UsersService {
+  constructor(private readonly dataSource: DataSource) {}
+
+  async onModuleInit() {
+    const result = await this.dataSource.query(
+      'SELECT inet_server_addr(), inet_server_port()',
+    );
+    console.log(result);
+  }
+
   create(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
