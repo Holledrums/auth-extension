@@ -1,9 +1,18 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unsafe-return */
+import {
+  Column,
+  Entity,
+  JoinTable,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Role } from '../enums/role.enum';
 import {
   Permission,
   PermissionType,
 } from 'src/iam/authorization/permission.type';
+import { ApiKey } from '../api-keys/entities/api-key.entity/api-key.entity';
 
 @Entity()
 export class User {
@@ -21,4 +30,8 @@ export class User {
 
   @Column({ enum: Permission, default: [], type: 'json' })
   permissions: PermissionType[];
+
+  @JoinTable() // 👈
+  @OneToMany((type) => ApiKey, (apiKey) => apiKey.user)
+  apiKeys: ApiKey[];
 }

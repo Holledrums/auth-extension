@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { Role } from '../../users/enums/role.enum';
 import { PermissionType } from '../authorization/permission.type';
 import { REQUEST_USER_KEY } from '../constants/iam.constants';

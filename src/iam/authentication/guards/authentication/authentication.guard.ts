@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import {
   CanActivate,
   ExecutionContext,
@@ -8,6 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { AccessTokenGuard } from '../access-token/access-token.guard';
 import { AuthType } from '../../enums/auth-type.enum';
 import { AUTH_TYPE_KEY } from '../../decorators/auth.decorator';
+import { ApiKeyGuard } from '../api-key/api-key.guard';
 
 @Injectable()
 export class AuthenticationGuard implements CanActivate {
@@ -16,6 +18,7 @@ export class AuthenticationGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly accessTokenGuard: AccessTokenGuard,
+    private readonly apiKeyGuard: ApiKeyGuard,
   ) {}
   private get authTypeGuardMap(): Record<
     AuthType,
@@ -23,6 +26,7 @@ export class AuthenticationGuard implements CanActivate {
   > {
     return {
       [AuthType.Bearer]: this.accessTokenGuard,
+      [AuthType.ApiKey]: this.apiKeyGuard,
       [AuthType.None]: { canActivate: () => true },
     };
   }
